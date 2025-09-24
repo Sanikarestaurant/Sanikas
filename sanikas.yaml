@@ -13,7 +13,7 @@ Parameters:
     Description: 'sanika-key'
   ImageId:
     Type: String
-    Default: 'ami-0e5f882be190e4b46' # Replace with Ubuntu AMI for your region
+    Default: 'ami-0ccbdfb001aa307a1' # Replace with Ubuntu AMI for your region
 
 Resources:
   SanikaSecurityGroup:
