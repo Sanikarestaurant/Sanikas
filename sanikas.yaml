@@ -1,20 +1,19 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Description: 'Template to launch an EC2 t3.medium Ubuntu in existing VPC with 30GB and Security Groups for SSH and HTTP'
-
 Parameters:
   VpcId:
-    Type: String
-    Description: 'vpc-06bda84b339b3cd76'
+    Type: AWS::EC2::VPC::Id
+    Description: 'VPC ID for deployment'
   SubnetId:
-    Type: String
-    Description: 'subnet-0394047886f0950f2'
+    Type: AWS::EC2::Subnet::Id
+    Description: 'Subnet ID for deployment'
   KeyName:
     Type: AWS::EC2::KeyPair::KeyName
-    Description: 'sanika-key'
+    Description: 'Key pair name for EC2 access'
   ImageId:
-    Type: String
-    Default: 'ami-0ccbdfb001aa307a1' # Replace with Ubuntu AMI for your region
-
+    Type: AWS::EC2::Image::Id
+    Default: 'ami-0ccbdfb001aa307a1'
+    Description: 'Ubuntu AMI ID for your region'
 Resources:
   SanikaSgSSH:
     Type: AWS::EC2::SecurityGroup
@@ -29,7 +28,6 @@ Resources:
       Tags:
         - Key: Name
           Value: sanikas_25-SG-SSH
-
   SanikaSgHTTP:
     Type: AWS::EC2::SecurityGroup
     Properties:
@@ -43,7 +41,6 @@ Resources:
       Tags:
         - Key: Name
           Value: sanikas_25-SG-HTTP
-
   SanikaInstance:
     Type: AWS::EC2::Instance
     Properties:
