@@ -1,0 +1,48 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'Template to launch an EC2 t3.medium Ubuntu in existing VPC with 30GB and Security Group'
+
+Parameters:
+  VpcId:
+    Type: String
+    Description: 'vpc-06bda84b339b3cd76'
+  SubnetId:
+    Type: String
+    Description: 'subnet-0394047886f0950f2'
+  KeyName:
+    Type: AWS::EC2::KeyPair::KeyName
+    Description: 'sanika-key'
+  ImageId:
+    Type: String
+    Default: 'ami-0e5f882be190e4b46' # Replace with Ubuntu AMI for your region
+
+Resources:
+  SanikaSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: "Sanikas_SG"
+      VpcId: !Ref VpcId
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 0.0.0.0/0
+      Tags:
+        - Key: Name
+          Value: sanikas_25-SG
+
+  SanikaInstance:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: t3.medium
+      SubnetId: !Ref SubnetId
+      SecurityGroupIds:
+        - !Ref SanikaSecurityGroup
+      KeyName: !Ref KeyName
+      ImageId: !Ref ImageId
+      BlockDeviceMappings:
+        - DeviceName: /dev/xvda
+          Ebs:
+            VolumeSize: 30
+      Tags:
+        - Key: Name
+          Value: sanikas_25
