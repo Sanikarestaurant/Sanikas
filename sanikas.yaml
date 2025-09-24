@@ -1,5 +1,5 @@
 AWSTemplateFormatVersion: '2010-09-09'
-Description: 'Template to launch an EC2 t3.medium Ubuntu in existing VPC with 30GB and Security Group'
+Description: 'Template to launch an EC2 t3.medium Ubuntu in existing VPC with 30GB and Security Groups for SSH and HTTP'
 
 Parameters:
   VpcId:
@@ -16,10 +16,10 @@ Parameters:
     Default: 'ami-0ccbdfb001aa307a1' # Replace with Ubuntu AMI for your region
 
 Resources:
-  SanikaSecurityGroup:
+  SanikaSgSSH:
     Type: AWS::EC2::SecurityGroup
     Properties:
-      GroupDescription: "Sanikas_SG"
+      GroupDescription: "Sanikas_SG for SSH"
       VpcId: !Ref VpcId
       SecurityGroupIngress:
         - IpProtocol: tcp
@@ -28,7 +28,21 @@ Resources:
           CidrIp: 0.0.0.0/0
       Tags:
         - Key: Name
-          Value: sanikas_25-SG
+          Value: sanikas_25-SG-SSH
+
+  SanikaSgHTTP:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: "Sanikas_SG for HTTP"
+      VpcId: !Ref VpcId
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0
+      Tags:
+        - Key: Name
+          Value: sanikas_25-SG-HTTP
 
   SanikaInstance:
     Type: AWS::EC2::Instance
@@ -36,7 +50,8 @@ Resources:
       InstanceType: t3.medium
       SubnetId: !Ref SubnetId
       SecurityGroupIds:
-        - !Ref SanikaSecurityGroup
+        - !Ref SanikaSgSSH
+        - !Ref SanikaSgHTTP
       KeyName: !Ref KeyName
       ImageId: !Ref ImageId
       BlockDeviceMappings:
