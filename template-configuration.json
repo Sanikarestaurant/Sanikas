@@ -1,5 +1,7 @@
 {
-  "KeyName": "sanika-key",
-  "VpcId": "vpc-06bda84b339b3cd76", 
-  "SubnetId": "subnet-0394047886f0950f2"
+  "Parameters": {
+    "KeyName": "sanika-key",
+    "VpcId": "vpc-06bda84b339b3cd76", 
+    "SubnetId": "subnet-0394047886f0950f2"
+  }
 }
