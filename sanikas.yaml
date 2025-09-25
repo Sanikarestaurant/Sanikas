@@ -14,6 +14,7 @@ Parameters:
     Type: AWS::EC2::Image::Id
     Default: 'ami-0ccbdfb001aa307a1'
     Description: 'Ubuntu AMI ID for your region'
+
 Resources:
   # Security Group for EC2 Instance
   SanikaSgCombined:
@@ -39,7 +40,7 @@ Resources:
           Description: "HTTPS access"
       Tags:
         - Key: Name
-          Value: sanikasrestaurant-SG-SSH-HTTP-HTTPS
+          Value: sanikasrestaurant-SG
 
   # EC2 Instance
   SanikaInstance:
@@ -55,8 +56,6 @@ Resources:
         - DeviceName: /dev/xvda
           Ebs:
             VolumeSize: 30
-            VolumeType: gp3
-            Encrypted: true
       Tags:
         - Key: Name
           Value: sanikasrestaurant
@@ -66,84 +65,6 @@ Resources:
     Type: AWS::S3::Bucket
     Properties:
       BucketName: !Sub 'sanikasrestaurant-${AWS::AccountId}-${AWS::Region}'
-      BucketEncryption:
-        ServerSideEncryptionConfiguration:
-          - ServerSideEncryptionByDefault:
-              SSEAlgorithm: AES256
-            BucketKeyEnabled: true
-      PublicAccessBlockConfiguration:
-        BlockPublicAcls: true
-        BlockPublicPolicy: true
-        IgnorePublicAcls: true
-        RestrictPublicBuckets: true
-      VersioningConfiguration:
-        Status: Enabled
       Tags:
         - Key: Name
           Value: sanikasrestaurant-storage
-        - Key: Environment
-          Value: production
-
-  # IAM Role for EC2 to access S3 (optional but recommended)
-  EC2S3AccessRole:
-    Type: AWS::IAM::Role
-    Properties:
-      RoleName: !Sub 'sanikasrestaurant-ec2-s3-role-${AWS::Region}'
-      AssumeRolePolicyDocument:
-        Version: '2012-10-17'
-        Statement:
-          - Effect: Allow
-            Principal:
-              Service: ec2.amazonaws.com
-            Action: sts:AssumeRole
-      Policies:
-        - PolicyName: S3AccessPolicy
-          PolicyDocument:
-            Version: '2012-10-17'
-            Statement:
-              - Effect: Allow
-                Action:
-                  - s3:GetObject
-                  - s3:PutObject
-                  - s3:DeleteObject
-                  - s3:ListBucket
-                Resource:
-                  - !Sub '${SanikasRestaurantBucket}/*'
-                  - !Ref SanikasRestaurantBucket
-      Tags:
-        - Key: Name
-          Value: sanikasrestaurant-ec2-s3-access
-
-  # Instance Profile for EC2
-  EC2InstanceProfile:
-    Type: AWS::IAM::InstanceProfile
-    Properties:
-      InstanceProfileName: !Sub 'sanikasrestaurant-instance-profile-${AWS::Region}'
-      Roles:
-        - !Ref EC2S3AccessRole
-
-# Outputs section to display important information
-Outputs:
-  InstanceId:
-    Description: 'EC2 Instance ID'
-    Value: !Ref SanikaInstance
-    Export:
-      Name: !Sub '${AWS::StackName}-InstanceId'
-  
-  InstancePublicIP:
-    Description: 'Public IP address of the EC2 instance'
-    Value: !GetAtt SanikaInstance.PublicIp
-    Export:
-      Name: !Sub '${AWS::StackName}-PublicIP'
-  
-  S3BucketName:
-    Description: 'Name of the created S3 bucket'
-    Value: !Ref SanikasRestaurantBucket
-    Export:
-      Name: !Sub '${AWS::StackName}-S3Bucket'
-  
-  S3BucketArn:
-    Description: 'ARN of the created S3 bucket'
-    Value: !GetAtt SanikasRestaurantBucket.Arn
-    Export:
-      Name: !Sub '${AWS::StackName}-S3BucketArn'
